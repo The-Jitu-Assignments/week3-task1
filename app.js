@@ -5,6 +5,8 @@ const completedTodos = document.querySelector('.completed--todos');
 const inCompleteTodos = document.querySelector('.incomplete--todos');
 const todoTitle = document.querySelector('.todo--title');
 const paginationNumbers = document.getElementById("pagination-numbers");
+const nextButton = document.getElementById("next-button");
+const prevButton = document.getElementById("prev-button");
 
 const url = 'https://jsonplaceholder.typicode.com/todos';
 
@@ -126,6 +128,7 @@ const setCurrentPage = (pageNum, data) => {
   currentPage = pageNum;
 
   handleActivePageNumber();
+  handlePageButtonsStatus();
 
   const prevRange = (pageNum - 1) * paginationLimit;
   const currRange = pageNum * paginationLimit;
@@ -159,7 +162,31 @@ const handleActivePageNumber = () => {
       button.classList.add('active');
     }
   })
-}
+};
+
+const disableButton = (button) => {
+  button.classList.add("disabled");
+  button.setAttribute("disabled", true);
+};
+ 
+const enableButton = (button) => {
+  button.classList.remove("disabled");
+  button.removeAttribute("disabled");
+};
+ 
+const handlePageButtonsStatus = () => {
+  if (currentPage === 1) {
+    disableButton(prevButton);
+  } else {
+    enableButton(prevButton);
+  }
+ 
+  if (page === currentPage) {
+    disableButton(nextButton);
+  } else {
+    enableButton(nextButton);
+  }
+};
 
 window.addEventListener('load', () => {
   const displayTodos = (todos) => {
@@ -175,7 +202,13 @@ window.addEventListener('load', () => {
     todoContainer.innerHTML = list;
     let listItem = document.querySelectorAll('.todo--item');
     setCurrentPage(1, listItem);
-    updatePage(listItem)
+    updatePage(listItem);
+    prevButton.addEventListener('click', () => {
+      setCurrentPage(currentPage - 1, listItem)
+    });
+    nextButton.addEventListener('click', () => {
+      setCurrentPage(currentPage + 1, listItem)
+    })
   }
   fetch(url)
     .then((response) => response.json())
