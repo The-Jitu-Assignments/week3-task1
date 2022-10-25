@@ -7,6 +7,7 @@ const todoTitle = document.querySelector('.todo--title');
 const paginationNumbers = document.getElementById("pagination-numbers");
 const nextButton = document.getElementById("next-button");
 const prevButton = document.getElementById("prev-button");
+const errorMessage = document.querySelector('.error--msg')
 
 const url = 'https://jsonplaceholder.typicode.com/todos';
 
@@ -18,6 +19,7 @@ const pageCount = data => {
   return Math.ceil(data.length / paginationLimit)
 };
 
+let todos;
 
 const fetchData = (url) => {
   fetch(url)
@@ -29,14 +31,12 @@ const fetchData = (url) => {
 fetchData(url);
 
 const getTodos = (todos) => {
+  todos = todos;
   displayTodos(todos);
   allTodos(todos);
-
-  let inCompleteTodos = todos.filter((todo) => todo.completed === false);
-  let completedTodos = todos.filter((todo) => todo.completed === true);
   
-  getIncompleteTodos(inCompleteTodos);
-  getCompletedTodos(completedTodos);
+  getIncompleteTodos(todos);
+  getCompletedTodos(todos);
   addNewTodo(todos);
 
   page = pageCount(todos)
@@ -45,6 +45,7 @@ const getTodos = (todos) => {
 
 
 const displayTodos = (todos) => {
+  console.log(todos);
   let list = '';
   todos.map((todo) => {
     list += `
@@ -69,38 +70,64 @@ const checkTodoStatus = value => {
 
 const getIncompleteTodos = (todos) => {
   inCompleteTodos.onclick = () => {
-    displayTodos(todos);
+    let uncompletedTodos = todos.filter((todo) => todo.completed === false);
     inCompleteTodos.classList.add('active');
-    completedTodos.classList.remove('active')
+    completedTodos.classList.remove('active');
+    displayTodos(uncompletedTodos);
   }
 };
 
 const getCompletedTodos = (todos) => {
   completedTodos.onclick = () => {
-    displayTodos(todos);
+    let completeTodos = todos.filter((todo) => todo.completed === true);
     completedTodos.classList.add('active');
     inCompleteTodos.classList.remove('active');
+    displayTodos(completeTodos)
   }
 }
 
 const addNewTodo = (todos) => {
-  addBtn.onclick = () => {
+  addBtn.onclick = async () => {
       let newTodo = {
         title: textInput.value,
         completed: true,
         userId: 2
+      };
+      
+      if (newTodo.title.length) {
+        postData(newTodo, todos);
+      } else {
+        errorMessage.innerHTML = '* Title should not be empty'
       }
-      todos.push(newTodo);
-      displayTodos(todos);
+      setTimeout(() => {
+        errorMessage.innerHTML = '';
+      }, 2000);
+      displayTodos(todos)
       textInput.value = '';
       inCompleteTodos.classList.remove('active');
       completedTodos.classList.remove('active');
   }
 };
 
+const postData = (data, todos) => {
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8"
+    }
+  })
+    .then((response) => {
+    return response.json()
+  }).then((newData) => {
+    todos.unshift(newData);
+    displayTodos(todos);
+    return newData
+  })
+}
+
 const allTodos = todos => {
   todoTitle.onclick = () => {
-    console.log(todos)
     displayTodos(todos);
     inCompleteTodos.classList.remove('active');
     completedTodos.classList.remove('active');
