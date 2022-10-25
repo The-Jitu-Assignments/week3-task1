@@ -21,6 +21,7 @@
   border: 1px solid black;
   border-radius: 10px;
   box-shadow: 2px 3px 30px -2px rgb(43, 58, 43);
+  background-color: #f8f6ee;
 }
 
 .todo--header {
@@ -39,7 +40,7 @@
 }
 
 .add--task span {
-  background-color: black;
+  background-color: rgb(5, 5, 5);
   padding: 3px 10px;
   cursor: pointer;
   color: white;
@@ -68,7 +69,7 @@
   justify-content: center;
   gap: 1rem;
   width: 300px;
-  background-color: black;
+  background-color: #30189e;
   height: 100px;
   color: white;
   padding: 10px;
@@ -80,7 +81,7 @@
 
 .item--status {
   font-size: 12px;
-  color: grey;
+  color: rgb(15, 228, 68);
 }
 
 .todos--status {
